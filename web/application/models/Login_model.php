@@ -4,6 +4,7 @@ namespace Model;
 
 use App;
 use Exception;
+use http\Client\Curl\User;
 use System\Core\CI_Model;
 
 class Login_model extends CI_Model {
@@ -23,11 +24,12 @@ class Login_model extends CI_Model {
      * @return User_model
      * @throws Exception
      */
-    public static function login(): User_model
+    public static function login(int $user_id): User_model
     {
         // TODO: task 1, аутентификация
+        self::start_session($user_id);
 
-        self::start_session();
+        return User_model::get_user();
     }
 
     public static function start_session(int $user_id)
