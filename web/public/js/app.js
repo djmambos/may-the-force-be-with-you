@@ -80,7 +80,7 @@ var app = new Vue({
 					'/main_page/comment',
 					comment
 				).then(function () {
-
+                    location.reload();
 				});
 			}
 

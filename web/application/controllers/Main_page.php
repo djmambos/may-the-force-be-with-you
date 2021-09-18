@@ -4,6 +4,7 @@ use Model\Boosterpack_model;
 use Model\Post_model;
 use Model\User_model;
 use Model\Login_model;
+use Model\Comment_model;
 
 /**
  * Created by PhpStorm.
@@ -69,7 +70,13 @@ class Main_page extends MY_Controller
 
     public function comment()
     {
+
         // TODO: task 2, комментирование
+        $data = ['user_id' => User_model::get_user()->get_id(),
+                'assign_id' => App::get_ci()->input->post('postId'),
+                'text' => App::get_ci()->input->post('commentText')];
+
+        return Comment_model::create($data);
     }
 
     public function like_comment(int $comment_id)
@@ -92,6 +99,11 @@ class Main_page extends MY_Controller
 
     public function get_post(int $post_id) {
         // TODO получения поста по id
+        $post = new Post_model($post_id);
+
+        $data = Post_model::preparation($post, 'full_info');
+
+        return $this->response_success(['post' => $data]);
     }
 
     public function buy_boosterpack()
