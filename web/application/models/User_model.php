@@ -273,12 +273,12 @@ class User_model extends Emerald_model {
         $this->wallet_balance = $this->get_wallet_balance() + $sum;
         $this->wallet_total_refilled = $this->get_wallet_total_refilled() + $sum;
 
-        if (!$this->save('wallet_balance', $this->wallet_balance))
+        if ( ! $this->save('wallet_balance', $this->wallet_balance))
         {
             $errors = TRUE;
         }
 
-        if (!$this->save('wallet_total_refilled', $this->wallet_total_refilled))
+        if ( ! $this->save('wallet_total_refilled', $this->wallet_total_refilled))
         {
             $errors = TRUE;
         }

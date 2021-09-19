@@ -25,6 +25,7 @@ class Core {
     // ACTION | REQUEST ASSIGNED
     const RESPONSE_GENERIC_INTERNAL_ERROR = 'internal_error'; // Если у нас excpetion выбил чтото . в info пишем инфу по ошибке.
     const RESPONSE_GENERIC_NEED_AUTH = 'need_auth'; // Если надо авторизоваться
+    const RESPONSE_GENERIC_NEED_SUM = 'need_sum'; // недостаточно баланса на счету
 
 
     const RESPONSE_GENERIC_DISABLED = 'disabled'; // Фунционал отключен или временно не доступен - через сеттинги выключили

@@ -82,49 +82,45 @@ class Main_page extends MY_Controller
     public function like_comment(int $comment_id)
     {
         // TODO: task 3, лайк комментария
+        if ( ! User_model::is_logged())
+        {
+            return $this->response_error(\System\Libraries\Core::RESPONSE_GENERIC_NEED_AUTH);
+        }
+
         $user = User_model::get_user();
         $comment = new Comment_model($comment_id);
 
-        if ($user->is_loaded())
+        if ($user->get_likes_balance() == 0)
         {
-            if ($user->get_likes_balance() !== 0)
-            {
-                $user->decrement_likes();
-                $comment->increment_likes($user);
-
-                return $this->response_success(['likes' => $comment->get_likes()]);
-            }
-            else
-            {
-                return $this->response_error(RESPONSE_GENERIC_NEED_SUM);
-            }
+            return $this->response_error(\System\Libraries\Core::RESPONSE_GENERIC_NEED_SUM);
         }
 
-        return $this->response_error(RESPONSE_GENERIC_NEED_AUTH);
+        $user->decrement_likes();
+        $comment->increment_likes($user);
+
+        return $this->response_success(['likes' => $comment->get_likes()]);
     }
 
     public function like_post(int $post_id)
     {
         // TODO: task 3, лайк поста
+        if ( ! User_model::is_logged())
+        {
+            return $this->response_error(\System\Libraries\Core::RESPONSE_GENERIC_NEED_AUTH);
+        }
+
         $user = User_model::get_user();
         $post = new Post_model($post_id);
 
-        if ($user->is_loaded())
+        if ($user->get_likes_balance() == 0)
         {
-            if ($user->get_likes_balance() !== 0)
-            {
-                $post->increment_likes($user);
-                $user->decrement_likes();
-
-                return $this->response_success(['likes' => $post->get_likes()]);
-            }
-            else
-            {
-                return $this->response_error(RESPONSE_GENERIC_NEED_SUM);
-            }
+            return $this->response_error(\System\Libraries\Core::RESPONSE_GENERIC_NEED_SUM);
         }
 
-        return $this->response_error(RESPONSE_GENERIC_NEED_AUTH);
+        $post->increment_likes($user);
+        $user->decrement_likes();
+
+        return $this->response_success(['likes' => $post->get_likes()]);
     }
 
     public function add_money()
@@ -136,12 +132,13 @@ class Main_page extends MY_Controller
         if (is_float($sum)) {
             $user = User_model::get_user();
 
-            if (!$user->add_money($sum)) {
+            if ( ! $user->add_money($sum))
+            {
                 $user->set_likes_balance($user->get_likes_balance() + $sum);
             }
             else
             {
-                return response_error(RESPONSE_GENERIC_INTERNAL_ERROR);
+                return response_error(\System\Libraries\Core::RESPONSE_GENERIC_INTERNAL_ERROR);
             }
         }
     }
