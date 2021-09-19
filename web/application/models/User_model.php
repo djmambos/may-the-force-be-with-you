@@ -268,8 +268,22 @@ class User_model extends Emerald_model {
     public function add_money(float $sum): bool
     {
         // TODO: task 4, добавление денег
+        $errors = FALSE;
 
-        return TRUE;
+        $this->wallet_balance = $this->get_wallet_balance() + $sum;
+        $this->wallet_total_refilled = $this->get_wallet_total_refilled() + $sum;
+
+        if (!$this->save('wallet_balance', $this->wallet_balance))
+        {
+            $errors = TRUE;
+        }
+
+        if (!$this->save('wallet_total_refilled', $this->wallet_total_refilled))
+        {
+            $errors = TRUE;
+        }
+
+        return $errors;
     }
 
 
@@ -292,9 +306,15 @@ class User_model extends Emerald_model {
      */
     public function decrement_likes(): bool
     {
+        $data = [
+            'likes_balance' => $this->likes_balance - 1,
+            'wallet_balance' => $this->wallet_balance - 1,
+            'wallet_total_withdrawn' => $this->wallet_total_withdrawn + 1
+        ];
+
         App::get_s()->from(self::get_table())
             ->where(['id' => $this->get_id()])
-            ->update(sprintf('likes_balance = likes_balance - %s', App::get_s()->quote(1)))
+            ->update($data)
             ->execute();
 
         if ( ! App::get_s()->is_affected())

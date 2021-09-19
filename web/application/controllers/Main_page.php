@@ -85,18 +85,22 @@ class Main_page extends MY_Controller
         $user = User_model::get_user();
         $comment = new Comment_model($comment_id);
 
-        if ($user->get_likes_balance() !== 0)
+        if ($user->is_loaded())
         {
-            $user->decrement_likes();
-            if ($user)
+            if ($user->get_likes_balance() !== 0)
             {
+                $user->decrement_likes();
                 $comment->increment_likes($user);
-            }
 
-            return $this->response_success(['likes' => $comment->get_likes()]);
+                return $this->response_success(['likes' => $comment->get_likes()]);
+            }
+            else
+            {
+                return $this->response_error(RESPONSE_GENERIC_NEED_SUM);
+            }
         }
 
-        return $this->response_error(RESPONSE_GENERIC_NEED_SUM);
+        return $this->response_error(RESPONSE_GENERIC_NEED_AUTH);
     }
 
     public function like_post(int $post_id)
@@ -105,18 +109,22 @@ class Main_page extends MY_Controller
         $user = User_model::get_user();
         $post = new Post_model($post_id);
 
-        if ($user->get_likes_balance() !== 0)
+        if ($user->is_loaded())
         {
-            $user->decrement_likes();
-            if ($user)
+            if ($user->get_likes_balance() !== 0)
             {
                 $post->increment_likes($user);
-            }
+                $user->decrement_likes();
 
-            return $this->response_success(['likes' => $post->get_likes()]);
+                return $this->response_success(['likes' => $post->get_likes()]);
+            }
+            else
+            {
+                return $this->response_error(RESPONSE_GENERIC_NEED_SUM);
+            }
         }
 
-        return $this->response_error(RESPONSE_GENERIC_NEED_SUM);
+        return $this->response_error(RESPONSE_GENERIC_NEED_AUTH);
     }
 
     public function add_money()
@@ -125,6 +133,17 @@ class Main_page extends MY_Controller
 
         $sum = (float)App::get_ci()->input->post('sum');
 
+        if (is_float($sum)) {
+            $user = User_model::get_user();
+
+            if (!$user->add_money($sum)) {
+                $user->set_likes_balance($user->get_likes_balance() + $sum);
+            }
+            else
+            {
+                return response_error(RESPONSE_GENERIC_INTERNAL_ERROR);
+            }
+        }
     }
 
     public function get_post(int $post_id) {
